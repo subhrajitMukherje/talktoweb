@@ -1,5 +1,6 @@
 import { Component } from "react";
 import { ragChat } from "../lib/rag-chat";
+import { redis } from "../lib/redis";
 
 interface PageProps {
   params: {
@@ -18,15 +19,26 @@ function reconstructUrl({ url }: { url: string[] }) {
 const Page = async ({ params }: PageProps) => {
   const reconstructedUrl = reconstructUrl({ url: params.url as string[] });
 
-  console.log(params);
+  const isAlreadyIndexed = await redis.sismember(
+    "indexed-urls",
+    reconstructedUrl
+  );
 
-  await ragChat.context.add({
-    type: "html",
-    source: reconstructedUrl,
-    config: { chunkOverlap: 50, chunkSize: 200 },
-  });
+  const sessionId = "mock-session";
 
-  return <h1> Thala for a reason</h1>;
+  if (!isAlreadyIndexed) {
+    await ragChat.context.add({
+      type: "html",
+      source: reconstructedUrl,
+      config: {
+        chunkOverlap: 50,
+        chunkSize: 200,
+      },
+    });
+    await redis.sadd("indexed-urls", reconstructedUrl);
+  }
+
+  return <ChatWrapper />;
 };
 
 export default Page;
