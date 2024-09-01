@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { ragChat } from "../lib/rag-chat";
 import { redis } from "../lib/redis";
+import { ChatWrapper } from "../components/ChatWrapper";
 
 interface PageProps {
   params: {
@@ -38,7 +39,7 @@ const Page = async ({ params }: PageProps) => {
     await redis.sadd("indexed-urls", reconstructedUrl);
   }
 
-  return <ChatWrapper />;
+  return <ChatWrapper sessionId={sessionId} />;
 };
 
 export default Page;
