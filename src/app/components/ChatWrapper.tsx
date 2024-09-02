@@ -3,14 +3,20 @@
 import { Message, useChat } from "ai/react";
 import { Session } from "inspector";
 import { Messages } from "./Messages";
-/*import { Messages } from "./Messages";
-import { ChatInput } from "./ChatInput";*/
+import { ChatInput } from "./ChatInput";
 
-export const ChatWrapper = ({ sessionId }: { sessionId: string }) => {
-  const { messages, handleInputChange, handleSubmit, input /*setInput*/ } =
+export const ChatWrapper = ({
+  sessionId,
+  initialMessages,
+}: {
+  sessionId: string;
+  initialMessages: Message[];
+}) => {
+  const { messages, handleInputChange, handleSubmit, input, setInput } =
     useChat({
       api: "/api/chat-stream",
       body: { sessionId },
+      initialMessages,
     });
 
   return (
@@ -18,7 +24,12 @@ export const ChatWrapper = ({ sessionId }: { sessionId: string }) => {
       <div className="flex-1 text-black bg-zinc-800 justify-between flex flex-col">
         <Messages messages={messages} />
       </div>
-      <ChatInput />
+      <ChatInput
+        input={input}
+        handleInputChange={handleInputChange}
+        handleSubmit={handleSubmit}
+        setInput={setInput}
+      />
     </div>
   );
 };
